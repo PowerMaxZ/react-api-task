@@ -1,8 +1,7 @@
-import React from 'react';
-import { Button, Checkbox } from 'antd';
+import { Button, Checkbox, Typography } from 'antd';
 
 export const ToDoItem = (props) => {
-  const { item, onCheck, onRemove } = props;
+  const { item, onCheck, onRemove, onChange } = props;
   const onRemoveItem = (e) => {
     e.preventDefault();
 
@@ -10,6 +9,13 @@ export const ToDoItem = (props) => {
       onRemove(item.id);
     }
   }
+
+  const onEditItem = (str) => {
+    item.content = str;
+    onChange(item.id);
+  }
+
+  const { Text } = Typography;
 
   const onCheckItem = () => {
     if (onCheck) {
@@ -22,7 +28,8 @@ export const ToDoItem = (props) => {
       <Checkbox 
         checked={item.checked}
         onChange={onCheckItem}
-      >{item.content}</Checkbox>
+      ></Checkbox>
+      <Text editable={{ onChange: onEditItem }}>{item.content}</Text>
       <Button onClick={onRemoveItem}>Remove</Button>
     </li>
   )

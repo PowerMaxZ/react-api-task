@@ -29,6 +29,7 @@ export const ToDo = () => {
             item={todo}
             onRemove={onRemove} 
             onCheck={onCheck} 
+            onChange={onChange}
           />) }
       </ul>
     )
@@ -64,6 +65,23 @@ export const ToDo = () => {
           config
         );
       }
+    }
+  }
+
+  const onChange = (id) => {
+    const index = todos.findIndex(todo => todo.id === id);
+
+    if (index !== -1) {
+      const todo = todos[index];
+
+      axios.post(
+        `https://api.todoist.com/rest/v1/tasks/${id}`,
+        todo,
+        config
+      );
+
+      todos.splice(index, 1, todo);
+      setTodos([...todos]);
     }
   }
 
