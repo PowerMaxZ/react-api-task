@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Card, Divider } from 'antd';
 import { ToDoItem } from './ToDoItem';
 import { ToDoForm } from './ToDoForm';
 
+const token = 'cb1239d967f87a2b54c4aa8d345b11594daeca09';
+const config = {
+  headers: { Authorization: `Bearer ${token}` }
+};
+
 export const ToDo = () => {
-  const [todos, setTodos] = useState([
-    {id: 1, name: 'some', checked: false},
-    {id: 2, name: 'another one', checked: false}
-  ]);
+  const [todos, setTodos] = useState([]);
+  useEffect(async () => {
+    const result = await axios.get(
+      'https://api.todoist.com/rest/v1/tasks',
+      config
+    );
+
+    setTodos(result.data);
+  }, []);
   const [idCount, setIdCount] = useState(10);
 
   const renderTodoItems = (todos) => {
@@ -27,6 +38,10 @@ export const ToDo = () => {
     const index = todos.findIndex(todo => todo.id === id);
 
     if (index !== -1) {
+      axios.delete(
+        `https://api.todoist.com/rest/v1/tasks/${id}`,
+        config
+      );
       todos.splice(index, 1);
       setTodos([...todos]);
     }
@@ -42,18 +57,26 @@ export const ToDo = () => {
       todos.splice(index, 1, todo);
 
       setTodos([...todos]);
+      if (todo.checked) {
+        axios.post(
+          `https://api.todoist.com/rest/v1/tasks/${id}/close`,
+          todo,
+          config
+        );
+      }
     }
   }
 
-  const onSubmit = (name) => {
-    const todo = {
-      name,
-      id: idCount,
-      checked: false
-    };
+  const onSubmit = async (content) => {
+    const todo = { content };
 
-    setTodos([...todos, todo]);
-    setIdCount(idCount + 1);
+    const { data } = await axios.post(
+      `https://api.todoist.com/rest/v1/tasks`,
+      todo,
+      config
+    );
+
+    setTodos([...todos, {...todo, id: data.id}]);
   } 
 
   return (

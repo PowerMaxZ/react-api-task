@@ -22,7 +22,7 @@ export const ToDoItem = (props) => {
       <Checkbox 
         checked={item.checked}
         onChange={onCheckItem}
-      >{item.name}</Checkbox>
+      >{item.content}</Checkbox>
       <Button onClick={onRemoveItem}>Remove</Button>
     </li>
   )
